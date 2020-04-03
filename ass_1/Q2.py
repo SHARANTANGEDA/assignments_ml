@@ -94,8 +94,8 @@ for i in range(5):
     predictions.append(predicted_y)
     
     match_cnt=0
-    for i in range(len(predicted_y)):
-        if(predicted_y[i] == test_y[i]):
+    for j in range(len(predicted_y)):
+        if(predicted_y[j] == test_y[j]):
             match_cnt+=1
     accuracy = match_cnt/len(predicted_y)
 
@@ -111,7 +111,7 @@ for i in range(5):
         elif label == 0 and pred == 0:
             TN += 1
 
-    print("Fold "+ str(i+1) + "TP, TN, FP, FN = " + str(TP)+", "+str(TN)+", "+str(FP)+", "+str(FN))
+    print("Fold "+ str(i+1) + ": TP, TN, FP, FN = " + str(TP)+", "+str(TN)+", "+str(FP)+", "+str(FN))
     precision_score = TP / (TP + FP)
     recall = TP / (TP + FN)
     f_score = (2 * precision_score * recall) / (precision_score + recall)
@@ -133,7 +133,7 @@ for i in range(len(accuracy_list)):
 std/=(len(accuracy_list))
 std**(0.5)
 
-print("Accuracy = " + str(mean) + "+-" + str(round(std,5)))
+print("Accuracy = " + str(round(mean,5)) + "+-" + str(round(std,5)))
 
 print("F Score in 5 folds " + str(F_score_list))
 
@@ -149,7 +149,7 @@ for i in range(len(F_score_list)):
 
 std_f/=(len(F_score_list))
 std_f**(0.5)
-print("F-score = " + str(mean_f) + "+-" + str(round(std_f,5)))
+print("F-score = " + str(round(mean_f,5)) + "+-" + str(round(std_f,5)))
 
 
 
