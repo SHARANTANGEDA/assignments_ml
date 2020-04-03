@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
 from Sentence_Stem import sentence_to_stem
 
 f = open("a1_d3.txt","r")
@@ -57,10 +51,6 @@ def cal_prob(part_lines, part_target):
     return (word_to_prob,word_after_one_prob,one_count,total_word_cnt)
 
 
-
-# In[2]:
-
-
 parts_lines = [[],[],[],[],[]]
 parts_target = [[],[],[],[],[]]
 for i in range(len(stemmed_lines)):
@@ -69,6 +59,9 @@ for i in range(len(stemmed_lines)):
 
 predictions = []
 accuracy_list = []
+F_score_list = []
+
+
 for i in range(5):
     train_x = []
     train_y = []
@@ -105,8 +98,25 @@ for i in range(5):
         if(predicted_y[i] == test_y[i]):
             match_cnt+=1
     accuracy = match_cnt/len(predicted_y)
-    
+
+    TP, TN, FP, FN = 0, 0, 0, 0
+
+    for pred, label in zip(predicted_y, test_y):
+        if label == 1 and pred == 1:
+            TP += 1
+        elif label == 1 and pred == 0:
+            FN += 1
+        elif label == 0 and pred == 1:
+            FP += 1
+        elif label == 0 and pred == 0:
+            TN += 1
+
+    print("Fold "+ str(i+1) + "TP, TN, FP, FN = " + str(TP)+", "+str(TN)+", "+str(FP)+", "+str(FN))
+    precision_score = TP / (TP + FP)
+    recall = TP / (TP + FN)
+    f_score = (2 * precision_score * recall) / (precision_score + recall)
     accuracy_list.append(accuracy)
+    F_score_list.append(f_score)
     
 print("accuracy in 5 folds testing = " + str(accuracy_list))
 
@@ -123,19 +133,24 @@ for i in range(len(accuracy_list)):
 std/=(len(accuracy_list))
 std**(0.5)
 
+print("Accuracy = " + str(mean) + "+-" + str(round(std,5)))
 
-print("mean = " + str(mean))
-print("standard deviation = " + str(round(std,5)))
-print("F Score = " + str(mean) + "+-" + str(round(std,5)))
+print("F Score in 5 folds " + str(F_score_list))
 
+mean_f = 0
+for i in range(len(F_score_list)):
+    mean_f+=F_score_list[i]
+    
+mean_f/=(len(F_score_list))
 
-# In[ ]:
+std_f=0
+for i in range(len(F_score_list)):
+    std_f += ((F_score_list[i]-mean_f)**2)
 
+std_f/=(len(F_score_list))
+std_f**(0.5)
+print("F-score = " + str(mean_f) + "+-" + str(round(std_f,5)))
 
-
-
-
-# In[ ]:
 
 
 
