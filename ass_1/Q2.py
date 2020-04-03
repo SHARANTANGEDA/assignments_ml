@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[1]:
+
+
 from Sentence_Stem import sentence_to_stem
 
 f = open("a1_d3.txt","r")
@@ -22,6 +28,7 @@ def cal_prob(part_lines, part_target):
     word_to_one = {}
     one_count = 0
     total_word_cnt=0
+    total_word_cnt_one=0
     for i in range(len(part_lines)):
         line = part_lines[i]
         for j in range(len(line)):
@@ -33,8 +40,10 @@ def cal_prob(part_lines, part_target):
             word_to_freq[word]+=1
             if(part_target[i] == 1):
                 word_to_one[word]+=1
+                
         if(part_target[i] == 1):
             one_count+=1
+            total_word_cnt_one+=(len(line))
         total_word_cnt+=(len(line))
         
     word_to_prob = {}
@@ -43,9 +52,13 @@ def cal_prob(part_lines, part_target):
     
     word_after_one_prob = {}
     for word in word_to_one.keys():
-        word_after_one_prob[word] = word_to_one[word]/one_count
+        word_after_one_prob[word] = word_to_one[word]/total_word_cnt_one
         
     return (word_to_prob,word_after_one_prob,one_count,total_word_cnt)
+
+
+
+# In[2]:
 
 
 parts_lines = [[],[],[],[],[]]
@@ -114,4 +127,16 @@ std**(0.5)
 print("mean = " + str(mean))
 print("standard deviation = " + str(round(std,5)))
 print("F Score = " + str(mean) + "+-" + str(round(std,5)))
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
 
