@@ -1,9 +1,10 @@
 import sys
+
 try:
     from stemming.porter2 import stem
 except ImportError:
-    print ('You need to install the following stemming package:')
-    print ('http://pypi.python.org/pypi/stemming/1.0')
+    print('You need to install the following stemming package:')
+    print('http://pypi.python.org/pypi/stemming/1.0')
     sys.exit(0)
 
 
@@ -44,18 +45,18 @@ def sentence_to_stem(sentence):
     
     for s in word_set:
         bow.append(s)
-
+    
     return bow
+
 
 def input_to_bow(sentence):
     if __name__ == '__main__':
-    
-        #sentence = input("Enter sentence: ")
+        
+        # sentence = input("Enter sentence: ")
         for word in sys.argv[2:]:
             sentence += ' ' + word
         sentence = sentence.strip()
-    
+        
         # make bag of words
         bow = sentence_to_stem(sentence)
         print(bow)
-    
