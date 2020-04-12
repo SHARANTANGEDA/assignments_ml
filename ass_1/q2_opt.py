@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from Sentence_Stem import sentence_to_stem
+from stemming.porter2 import stem
 
 
 def scores(y, y_pred, fold_ind):
@@ -23,7 +23,7 @@ def scores(y, y_pred, fold_ind):
     return accuracy, f_score
 
 
-def sentence_to_stem1(sentence):
+def sentence_to_stem(sentence):
     sentence = sentence[0]
     sentence_flat = sentence.replace('\r', '\n').replace('\n', ' ').lower()
     punctuation = (',', "'", '"', ",", ';', ':', '.', '?',
@@ -31,12 +31,9 @@ def sentence_to_stem1(sentence):
     for p in punctuation:
         sentence_flat = sentence_flat.replace(p, '')
     words = filter(lambda x: x.strip() != '', sentence_flat.split(' '))
-    # unique_words = set(words)
-    # s = ' '.join(unique_words)
+    words = map(lambda x: stem(x), words)
     s = ' '.join(words)
-    stem = sentence_to_stem(s)
-    s_stemmed = ' '.join(stem)
-    return s_stemmed
+    return s
 
 
 def fill_vocab(sentence, vocab, pos_vocab, vocab_0, y, wc_total, wc_pos, laplace_constant):
@@ -72,15 +69,13 @@ def calc_prob(X, y, laplace_constant=1):
 
 df = pd.read_csv('a1_d3.txt', delimiter='\t', header=None)
 data = np.array(df)
-# np.random.shuffle(data)
 X, y = data[:, 0].reshape((len(data), 1)), data[:, 1]
-X = np.apply_along_axis(sentence_to_stem1, 1, X).reshape((len(X), 1))
+X = np.apply_along_axis(sentence_to_stem, 1, X).reshape((len(X), 1))
 print(X.shape)
 cross_valid_lines = np.split(X, (int(0.2 * len(X)), int(0.4 * len(X)),
                                  int(0.6 * len(X)), int(0.8 * len(X))))
 cross_valid_target = np.split(y, (int(0.2 * len(y)), int(0.4 * len(y)),
                                   int(0.6 * len(y)), int(0.8 * len(y))))
-print(len(cross_valid_lines), len(cross_valid_target))
 predictions = []
 accuracy_list = []
 F_score_list = []
