@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from Sentence_Stem import sentence_to_stem
 
 
 def scores(y, y_pred, fold_ind):
@@ -17,19 +18,25 @@ def scores(y, y_pred, fold_ind):
     recall = TP / (TP + FN)
     accuracy = ((TP + TN) / (TP + FN + FP + TN)) * 100
     f_score = (2 * precision_score * recall) / (precision_score + recall)
-    print("Fold " + str(fold_ind) + ": TP, TN, FP, FN = " + str(TP) + ", " + str(TN) + ", " + str(FP) + ", " + str(FN))
+    print("Fold " + str(fold_ind) + ": TP, TN, FP, FN = " +
+          str(TP) + ", " + str(TN) + ", " + str(FP) + ", " + str(FN))
     return accuracy, f_score
 
 
-def sentence_to_stem(sentence):
+def sentence_to_stem1(sentence):
     sentence = sentence[0]
     sentence_flat = sentence.replace('\r', '\n').replace('\n', ' ').lower()
-    punctuation = (',', "'", '"', ",", ';', ':', '.', '?', '!', '(', ')', '{', '}', '/', '_', '|', '-')
+    punctuation = (',', "'", '"', ",", ';', ':', '.', '?',
+                   '!', '(', ')', '{', '}', '/', '_', '|', '-')
     for p in punctuation:
         sentence_flat = sentence_flat.replace(p, '')
     words = filter(lambda x: x.strip() != '', sentence_flat.split(' '))
-    unique_words = set(words)
-    return ' '.join(unique_words)
+    # unique_words = set(words)
+    # s = ' '.join(unique_words)
+    s = ' '.join(words)
+    stem = sentence_to_stem(s)
+    s_stemmed = ' '.join(stem)
+    return s_stemmed
 
 
 def fill_vocab(sentence, vocab, pos_vocab, vocab_0, y, wc_total, wc_pos, laplace_constant):
@@ -54,10 +61,11 @@ def calc_prob(X, y, laplace_constant=1):
     vocab, vocab_1, vocab_0, word_cnt_total, word_cnt_1 = {}, {}, {}, 0, 0
     for ind, sentence in enumerate(X):
         word_cnt_total, word_cnt_1 = fill_vocab(sentence[0], vocab, vocab_1, vocab_0, y[ind], word_cnt_total,
-                                                 word_cnt_1, laplace_constant)
+                                                word_cnt_1, laplace_constant)
     print(word_cnt_1, word_cnt_total, len(vocab), len(vocab_0), len(vocab_1))
     word_prob_1 = {key: value / (word_cnt_1 + len(vocab)) for key, value in vocab_1.items()}
-    word_prob_0 = {key: value / (word_cnt_total - word_cnt_1 + len(vocab)) for key, value in vocab_0.items()}
+    word_prob_0 = {key: value / (word_cnt_total - word_cnt_1 + len(vocab))
+                   for key, value in vocab_0.items()}
     log_prior_0, log_prior_1 = prob_0, prob_1
     return vocab, vocab_0, vocab_1, word_prob_0, word_prob_1, word_cnt_total, word_cnt_1, log_prior_0, log_prior_1
 
@@ -66,10 +74,12 @@ df = pd.read_csv('a1_d3.txt', delimiter='\t', header=None)
 data = np.array(df)
 # np.random.shuffle(data)
 X, y = data[:, 0].reshape((len(data), 1)), data[:, 1]
-X = np.apply_along_axis(sentence_to_stem, 1, X).reshape((len(X), 1))
+X = np.apply_along_axis(sentence_to_stem1, 1, X).reshape((len(X), 1))
 print(X.shape)
-cross_valid_lines = np.split(X, (int(0.2 * len(X)), int(0.4 * len(X)), int(0.6 * len(X)), int(0.8 * len(X))))
-cross_valid_target = np.split(y, (int(0.2 * len(y)), int(0.4 * len(y)), int(0.6 * len(y)), int(0.8 * len(y))))
+cross_valid_lines = np.split(X, (int(0.2 * len(X)), int(0.4 * len(X)),
+                                 int(0.6 * len(X)), int(0.8 * len(X))))
+cross_valid_target = np.split(y, (int(0.2 * len(y)), int(0.4 * len(y)),
+                                  int(0.6 * len(y)), int(0.8 * len(y))))
 print(len(cross_valid_lines), len(cross_valid_target))
 predictions = []
 accuracy_list = []
@@ -78,7 +88,8 @@ for idx in range(5):
     X_test, y_test = cross_valid_lines[idx], cross_valid_target[idx]
     X_train = np.concatenate([x for i, x in enumerate(cross_valid_lines) if i != idx])
     y_train = np.concatenate([x for i, x in enumerate(cross_valid_target) if i != idx])
-    vocab, vocab_0, vocab_1, word_prob_0, word_prob_1, word_cnt_total, word_cnt_1, log_prior_0, log_prior_1 = calc_prob(X_train, y_train)
+    vocab, vocab_0, vocab_1, word_prob_0, word_prob_1, word_cnt_total, word_cnt_1, log_prior_0, log_prior_1 = calc_prob(
+        X_train, y_train)
     y_pred = []
     for ind in range(len(X_test)):
         sent = X_test[ind][0].split(' ')

@@ -30,24 +30,24 @@ def cal_prob(part_lines, part_target):
             if word not in word_to_freq.keys():
                 word_to_freq[word] = 0
                 word_to_one[word] = 0
-            
+
             word_to_freq[word] += 1
             if part_target[i] == 1:
                 word_to_one[word] += 1
-        
+
         if part_target[i] == 1:
             one_count += 1
             total_word_cnt_one += (len(line))
         total_word_cnt += (len(line))
-    
+
     word_to_prob = {}
     for word in word_to_freq.keys():
         word_to_prob[word] = word_to_freq[word] / total_word_cnt
-    
+
     word_after_one_prob = {}
     for word in word_to_one.keys():
         word_after_one_prob[word] = word_to_one[word] / total_word_cnt_one
-    
+
     return word_to_prob, word_after_one_prob, one_count, total_word_cnt
 
 
@@ -71,7 +71,7 @@ for i in range(5):
             train_x = train_x + parts_lines[j]
             train_y = train_y + parts_target[j]
     (word_to_prob, word_after_one_prob, one_count, total_word_cnt) = cal_prob(train_x, train_y)
-    
+
     predicted_y = []
     for j in range(len(test_x)):
         line = test_x[j]
@@ -83,23 +83,23 @@ for i in range(5):
                 numerator *= (word_after_one_prob[word])
                 denominator *= (word_to_prob[word])
         numerator *= (one_count / len(train_y))
-        
+
         prob_1 = numerator / denominator
-        
+
         if (prob_1 >= 0.5):
             predicted_y.append(1)
         else:
             predicted_y.append(0)
     predictions.append(predicted_y)
-    
+
     match_cnt = 0
     for j in range(len(predicted_y)):
         if (predicted_y[j] == test_y[j]):
             match_cnt += 1
     accuracy = match_cnt / len(predicted_y)
-    
+
     TP, TN, FP, FN = 0, 0, 0, 0
-    
+
     for pred, label in zip(predicted_y, test_y):
         if label == 1 and pred == 1:
             TP += 1
@@ -109,8 +109,9 @@ for i in range(5):
             FP += 1
         elif label == 0 and pred == 0:
             TN += 1
-    
-    print("Fold " + str(i + 1) + ": TP, TN, FP, FN = " + str(TP) + ", " + str(TN) + ", " + str(FP) + ", " + str(FN))
+
+    print("Fold " + str(i + 1) + ": TP, TN, FP, FN = " + str(TP) +
+          ", " + str(TN) + ", " + str(FP) + ", " + str(FN))
     precision_score = TP / (TP + FP)
     recall = TP / (TP + FN)
     f_score = (2 * precision_score * recall) / (precision_score + recall)

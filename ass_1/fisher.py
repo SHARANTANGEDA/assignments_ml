@@ -21,7 +21,7 @@ def plot_gaussian(X0, X1, intersection):
 
 def calc_s_w_terms(X, mean):
     print("SUM:", (X - mean).T.dot((X - mean)))
-    
+
     return (X - mean).T.dot((X - mean))
 
 
@@ -49,13 +49,14 @@ def scores(X, y, w, threshold):
     print("F-Score:", (2*precision_score*recall)/(precision_score + recall))
     print("Accuracy Percentage %:", ((TP + TN)/(TP+FN+FP+TN))*100)
     return X.dot(w)
-    
+
 
 # This will yield a quadratic equation of form ax**2+bx+c, so we find a, b, c and their roots here
 def solve_gaussian_equations(mean_1, std_1, mean_2, std_2):
     a = (1 / (2 * std_1 ** 2)) - (1 / (2 * std_2 ** 2))
     b = (mean_2 / (std_2 ** 2)) - (mean_1 / (std_1 ** 2))
-    c = ((mean_1 ** 2) / (2 * std_1 ** 2)) - ((mean_2 ** 2) / (2 * std_2 ** 2)) - np.log(std_2/std_1)
+    c = ((mean_1 ** 2) / (2 * std_1 ** 2)) - \
+        ((mean_2 ** 2) / (2 * std_2 ** 2)) - np.log(std_2/std_1)
     return np.roots([a, b, c])
 
 
@@ -88,5 +89,6 @@ y_zeroes = np.zeros(X_reduced.shape[0])
 # ax2.scatter(X_reduced, y_zeroes, marker='.')
 plt.scatter(X_train0_trans, [0] * len(X_train0_trans), label="dots", color="red", marker=".", s=3)
 plt.scatter(X_train1_trans, [0] * len(X_train1_trans), label="dots", color="blue", marker=".", s=3)
-ax2.set_title('Fisher Discriminant Analysis\n$\\regular_{Test \ Points\ on\ new\ Axis}$', fontsize=20)
+ax2.set_title(
+    'Fisher Discriminant Analysis\n$\\regular_{Test \ Points\ on\ new\ Axis}$', fontsize=20)
 plt.show()

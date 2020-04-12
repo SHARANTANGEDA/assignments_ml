@@ -9,7 +9,8 @@ fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(8, 4))
 def plot_gaussian(X0, X1, intersection):
     m0, m1 = np.mean(X0), np.mean(X1)
     std0, std1 = np.sqrt(np.mean((X0 - m0) ** 2)), np.sqrt(np.mean((X1 - m1) ** 2))
-    interval = np.linspace(min(m0 - 3 * std0, m1 - 3 * std1), max(m0 + 3 * std0, m1 + 3 * std1), 1000)
+    interval = np.linspace(min(m0 - 3 * std0, m1 - 3 * std1),
+                           max(m0 + 3 * std0, m1 + 3 * std1), 1000)
     ax1.set_xlim(min(m0 - 3 * std0, m1 - 3 * std1), max(m0 + 3 * std0, m1 + 3 * std1))
     ax1.grid()
     ax1.set_title('Normal Distribution of Each Class\n$\\regular_{Green \ dot\ shows\ the\ intersection\ of\ curves}$',
@@ -22,7 +23,7 @@ def plot_gaussian(X0, X1, intersection):
 
 def calc_s_w_terms(X, mean):
     print("SUM:", (X - mean).T.dot((X - mean)))
-    
+
     return (X - mean).T.dot((X - mean))
 
 
@@ -56,7 +57,8 @@ def scores(X, y, w, threshold):
 def solve_gaussian_equations(mean_1, std_1, mean_2, std_2):
     a = (1 / (2 * std_1 ** 2)) - (1 / (2 * std_2 ** 2))
     b = (mean_2 / (std_2 ** 2)) - (mean_1 / (std_1 ** 2))
-    c = ((mean_1 ** 2) / (2 * std_1 ** 2)) - ((mean_2 ** 2) / (2 * std_2 ** 2)) - np.log(std_2 / std_1)
+    c = ((mean_1 ** 2) / (2 * std_1 ** 2)) - \
+        ((mean_2 ** 2) / (2 * std_2 ** 2)) - np.log(std_2 / std_1)
     return np.roots([a, b, c])
 
 
@@ -69,7 +71,8 @@ d_train, d_test = np.split(data, [int(0.8 * len(data))])
 d_train0, d_train1 = d_train[d_train[:, cols-1] == 0], d_train[d_train[:, cols-1] == 1]
 X_train0 = d_train0[:, 0:cols-1]
 X_train1 = d_train1[:, 0:cols-1]
-mean0, mean1 = np.mean(X_train0, axis=0).reshape((1, cols-1)), np.mean(X_train1, axis=0).reshape((1, cols-1))
+mean0, mean1 = np.mean(X_train0, axis=0).reshape(
+    (1, cols-1)), np.mean(X_train1, axis=0).reshape((1, cols-1))
 S_w = calc_s_w_terms(X_train0, mean0) + calc_s_w_terms(X_train1, mean1)
 w = np.linalg.inv(S_w).dot((mean1 - mean0).T)  # Parameter w
 print(w)
@@ -89,5 +92,6 @@ y_zeroes = np.zeros(X_reduced.shape[0])
 # ax2.scatter(X_reduced, y_zeroes, marker='.')
 plt.scatter(X_train0_trans, [0] * len(X_train0_trans), label="dots", color="red", marker=".", s=3)
 plt.scatter(X_train1_trans, [0] * len(X_train1_trans), label="dots", color="blue", marker=".", s=3)
-ax2.set_title('Fisher Discriminant Analysis\n$\\regular_{Test \ Points\ on\ new\ Axis}$', fontsize=20)
+ax2.set_title(
+    'Fisher Discriminant Analysis\n$\\regular_{Test \ Points\ on\ new\ Axis}$', fontsize=20)
 plt.show()

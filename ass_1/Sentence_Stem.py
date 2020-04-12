@@ -30,33 +30,33 @@ def sentence_to_stem(sentence):
     for p in punctuation:
         sentence_flat = sentence_flat.replace(p, '')
     words = filter(lambda x: x.strip() != '', sentence_flat.split(' '))
-    
+
     # print(sentence_flat)
     # stem words
     words = map(lambda x: stem(x), words)
-    
+
     word_set = {'azbsbs'}
-    
+
     for w in words:
         word_set.add(w)
-    
+
     word_set.remove('azbsbs')
     bow = []
-    
+
     for s in word_set:
         bow.append(s)
-    
+
     return bow
 
 
 def input_to_bow(sentence):
     if __name__ == '__main__':
-        
+
         # sentence = input("Enter sentence: ")
         for word in sys.argv[2:]:
             sentence += ' ' + word
         sentence = sentence.strip()
-        
+
         # make bag of words
         bow = sentence_to_stem(sentence)
         print(bow)
