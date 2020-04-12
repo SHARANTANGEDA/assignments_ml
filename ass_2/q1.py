@@ -11,9 +11,11 @@ def get_attribute_info(w):
                   2: 'skewness of Wavelet Transformed image',
                   3: 'curtosis of Wavelet Transformed image',
                   4: 'entropy of image '}
-    print('Most Important Feature is:', attributes[int(max_ind)], 'with Col No:', max_ind, 'and weight:', w[int(max_ind)])
-    print('Least Important Feature is:', attributes[int(min_ind)], 'with Col No:', min_ind, 'and weight:', w[int(min_ind)])
-    
+    print('Most Important Feature is:', attributes[int(
+        max_ind)], 'with Col No:', max_ind, 'and weight:', w[int(max_ind)])
+    print('Least Important Feature is:', attributes[int(
+        min_ind)], 'with Col No:', min_ind, 'and weight:', w[int(min_ind)])
+
 
 def init_params_options(X):
     # w = np.zeros(X_train.shape[1])

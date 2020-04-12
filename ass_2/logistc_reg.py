@@ -66,4 +66,3 @@ y = 1 / (1 + np.exp(-X_test.dot(w)))  # sigmoid
 y[y < 0.5] = 0
 y[y >= 0.5] = 1
 scores(y_test, y)
-
