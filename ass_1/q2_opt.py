@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-from stemming.porter2 import stem
 
 
 def scores(y, y_pred, fold_ind):
@@ -31,7 +30,7 @@ def sentence_to_stem(sentence):
     for p in punctuation:
         sentence_flat = sentence_flat.replace(p, '')
     words = filter(lambda x: x.strip() != '', sentence_flat.split(' '))
-    words = map(lambda x: stem(x), words)
+    # words = map(lambda x: stem(x), words)
     s = ' '.join(words)
     return s
 
