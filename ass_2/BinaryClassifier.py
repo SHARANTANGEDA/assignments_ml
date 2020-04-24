@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
 class BinaryClassifier:
-	def __init__(self, input_dim, hidden_layers, weights_initialization = "uniform"):
+	def __init__(self, input_dim, hidden_layers, weights_initialization = "uniform", activation = "tanh"):
 		#Activation Functions and their derivatives
 		self.sigmoid = lambda x: 1/(1+np.exp(-x))
 		self.relu = lambda x: np.where(x>0, x, 0)
@@ -14,6 +14,7 @@ class BinaryClassifier:
 		self.relu_der = lambda x: np.where(x>0,1,0)
 		self.tanh = lambda x: (2/(1 + np.exp(-2*x))) - 1 
 		self.tanh_der = lambda x: 1 - x**2
+		self.activation = activation
 
 		self.input_dim = input_dim
 		self.output_dim = 1
@@ -62,8 +63,11 @@ class BinaryClassifier:
 			layer = np.append(layer, self.bias[l_no].reshape(1,self.bias[l_no].shape[0]), axis = 0)
 			inputs = np.append(self.outputs[-1], np.full((self.outputs[-1].shape[0],1) , 1), axis = 1)
 			if l_no != len(self.network) - 1:
+				if self.activation == "relu":
 				#ReLU is activation for hidden layers
-				self.outputs.append(self.tanh(np.matmul(inputs,layer)))
+					self.outputs.append(self.relu(np.matmul(inputs,layer)))
+				elif self.activation == "tanh":
+					self.outputs.append(self.tanh(np.matmul(inputs,layer)))
 			else:
 				#Sigmoid is activation for last layer
 				self.outputs.append(self.sigmoid(np.matmul(inputs,layer)))
@@ -88,7 +92,10 @@ class BinaryClassifier:
 				out = []
 				for i in range(layer.shape[0]):
 					out.append(np.dot(layer[i],deltas[-1][j]))
-				dels.append(np.multiply(out,self.tanh_der(self.outputs[-(l_no+2)][j])))
+				if self.activation == "tanh":
+					dels.append(np.multiply(out,self.tanh_der(self.tanh(self.outputs[-(l_no+2)][j]))))
+				elif self.activation == "relu":
+					dels.append(np.multiply(out,self.relu_der(self.outputs[-(l_no+2)][j])))
 			deltas.append(np.array(dels).reshape(Y.shape[0],len(layer)))
 		self.deltas = [d for d in reversed(deltas)]
 		if use_bias == True:
@@ -141,10 +148,12 @@ class BinaryClassifier:
 input_dim = 10
 hidden_layers = [20,20]
 weights_initialization = "normal"
-nn = BinaryClassifier(input_dim,hidden_layers, weights_initialization)
+activation = "tanh"
+nn = BinaryClassifier(input_dim,hidden_layers, weights_initialization, activation)
 print("Input dimension = ", input_dim)
 print("Hidden Layers = ", hidden_layers)
 print("Weights Initialising = ", weights_initialization)
+print("Activation Function = ", activation)
 
 df = pd.read_csv('housepricedata.csv')
 label = 'AboveMedianPrice'
