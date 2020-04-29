@@ -34,7 +34,7 @@ def scores(y, y_pred):
     print("Accuracy Percentage %:", ((TP + TN) / (TP + FN + FP + TN)) * 100)
 
 
-df = pd.read_csv('data_banknote_authentication_a2_1.txt', sep=',', header=None)
+df = pd.read_csv('../data_banknote_authentication_a2_1.txt', sep=',', header=None)
 data = np.array(df)
 data = standard_scalar(data)  # Standardized Data with min=0, max=1, mean=0, var=1
 np.random.shuffle(data)
