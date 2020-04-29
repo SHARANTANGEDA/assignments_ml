@@ -1,6 +1,6 @@
 from Sentence_Stem import sentence_to_stem
 
-f = open("a1_d3.txt", "r")
+f = open("../a1_d3.txt", "r")
 
 lines = f.readlines()
 

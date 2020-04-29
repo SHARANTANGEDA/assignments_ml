@@ -144,7 +144,7 @@ class BinaryClassifier:
 		
 		return ((tp + tn) / X.shape[0]) * 100, loss / len(X), fscore
 
-
+ 
 input_dim = 10
 hidden_layers = [20, 20]
 weights_initialization = "normal"
