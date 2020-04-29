@@ -163,7 +163,7 @@ print("Hidden Layers = ", hidden_layers)
 print("Weights Initialising = ", weights_initialization)
 print("Activation Function = ", activation)
 
-df = pd.read_csv('housepricedata.csv')
+df = pd.read_csv('housepricedata_a2_2.csv')
 label = 'AboveMedianPrice'
 X = df.drop(label, axis = 1).values
 
