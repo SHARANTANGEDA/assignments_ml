@@ -67,28 +67,28 @@ data = np.array(df)
 cols = len(df.columns)
 X = df[df.columns[0:cols - 1]]
 y = np.array(df[df.columns[cols - 1]]).reshape(-1, 1)
-d_0, d_1 = data[data[:, cols - 1] == 0], data[data[:, cols - 1] == 1]
-X_0 = d_0[:, 0:cols - 1]
-X_1 = d_1[:, 0:cols - 1]
-mean0, mean1 = np.mean(X_0, axis=0).reshape(
-    (1, cols - 1)), np.mean(X_1, axis=0).reshape((1, cols - 1))
-S_w = (X_0 - mean0).T.dot((X_0 - mean0)) + (X_1 - mean1).T.dot((X_1 - mean1))
+d_train, d_test = np.split(data, [int(0.8 * len(data))])
+d_train0, d_train1 = d_train[d_train[:, cols - 1] == 0], d_train[d_train[:, cols - 1] == 1]
+X_train0 = d_train0[:, 0:cols - 1]
+X_train1 = d_train1[:, 0:cols - 1]
+mean0, mean1 = np.mean(X_train0, axis=0).reshape(
+    (1, cols - 1)), np.mean(X_train1, axis=0).reshape((1, cols - 1))
+S_w = (X_train0 - mean0).T.dot((X_train0 - mean0)) + (X_train1 - mean1).T.dot((X_train1 - mean1))
 w = np.linalg.inv(S_w).dot((mean1 - mean0).T)  # Parameter w
-X_0_trans, x_1_trans = X_0.dot(w), X_1.dot(w)
-X0_new_mean = np.mean(X_0_trans)
-X0_new_std = np.sqrt(np.mean((X_0_trans - X0_new_mean) ** 2))
-X1_new_mean = np.mean(x_1_trans)
-X1_new_std = np.sqrt(np.mean((x_1_trans - X1_new_mean) ** 2))
+X_train0_trans, X_train1_trans = X_train0.dot(w), X_train1.dot(w)
+X0_new_mean = np.mean(X_train0_trans)
+X0_new_std = np.sqrt(np.mean((X_train0_trans - X0_new_mean) ** 2))
+X1_new_mean = np.mean(X_train1_trans)
+X1_new_std = np.sqrt(np.mean((X_train1_trans - X1_new_mean) ** 2))
 intersection = solve_gaussian_equations(X0_new_mean, X0_new_std, X1_new_mean, X1_new_std)
 threshold = intersection[1]  # Threshold
-print("Threshold:", threshold)
-X, y = data[:, 0:cols - 1], data[:, [cols - 1]]
-X_reduced = scores(X, y, w, threshold)
-plot_gaussian(X_0_trans, x_1_trans, intersection)
+X_test, y_test = d_test[:, 0:cols - 1], d_test[:, [cols - 1]]
+X_reduced = scores(X_test, y_test, w, threshold)
+plot_gaussian(X_train0_trans, X_train1_trans, intersection)
 y_zeroes = np.zeros(X_reduced.shape[0])
 # ax2.scatter(X_reduced, y_zeroes, marker='.')
-plt.scatter(X_0_trans, [0] * len(X_0_trans), label="dots", color="red", marker=".", s=3)
-plt.scatter(x_1_trans, [0] * len(x_1_trans), label="dots", color="blue", marker=".", s=3)
+plt.scatter(X_train0_trans, [0] * len(X_train0_trans), label="dots", color="red", marker=".", s=3)
+plt.scatter(X_train1_trans, [0] * len(X_train1_trans), label="dots", color="blue", marker=".", s=3)
 ax2.set_title(
     'Fisher Discriminant Analysis\n$\\regular_{Test \ Points\ on\ new\ Axis}$', fontsize=20)
 plt.show()
