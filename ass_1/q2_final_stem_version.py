@@ -36,17 +36,17 @@ def sentence_to_stem(sentence):
     return s
 
 
-def fill_vocab(sentence, vocab, pos_vocab, vocab_0, y, wc_total, wc_pos, laplace_constant):
+def fill_vocab(sentence, vocab, vocab_1, vocab_0, y, wc_total, wc_pos, laplace_constant):
     words = sentence.split(' ')
     for word in words:
         wc_total += 1
         if word not in vocab:
             vocab[word] = laplace_constant
-            pos_vocab[word] = laplace_constant
+            vocab_1[word] = laplace_constant
             vocab_0[word] = laplace_constant
         vocab[word] += 1
         if y == 1:
-            pos_vocab[word] += 1
+            vocab_1[word] += 1
             wc_pos += 1
         if y == 0:
             vocab_0[word] += 1
@@ -64,8 +64,7 @@ def calc_prob(X, y, laplace_constant=1):
     word_prob_1 = {key: value / (word_cnt_1 + len(vocab)) for key, value in vocab_1.items()}
     word_prob_0 = {key: value / (word_cnt_total - word_cnt_1 + len(vocab))
                    for key, value in vocab_0.items()}
-    log_prior_0, log_prior_1 = prob_0, prob_1
-    return vocab, vocab_0, vocab_1, word_prob_0, word_prob_1, word_cnt_total, word_cnt_1, log_prior_0, log_prior_1
+    return vocab, vocab_0, vocab_1, word_prob_0, word_prob_1, word_cnt_total, word_cnt_1, prob_0, prob_1
 
 
 df = pd.read_csv('a1_d3.txt', delimiter='\t', header=None)
@@ -84,18 +83,18 @@ for idx in range(5):
     X_test, y_test = cross_valid_lines[idx], cross_valid_target[idx]
     X_train = np.concatenate([x for i, x in enumerate(cross_valid_lines) if i != idx])
     y_train = np.concatenate([x for i, x in enumerate(cross_valid_target) if i != idx])
-    vocab, vocab_0, vocab_1, word_prob_0, word_prob_1, word_cnt_total, word_cnt_1, log_prior_0, log_prior_1 = calc_prob(
+    vocab, vocab_0, vocab_1, word_prob_0, word_prob_1, word_cnt_total, word_cnt_1, prob_0, prob_1 = calc_prob(
         X_train, y_train)
     y_pred = []
     for ind in range(len(X_test)):
         sent = X_test[ind][0].split(' ')
-        prob_sum_0, prob_sum_1 = log_prior_0, log_prior_1
+        prob_prod_0, prob_prod_1 = prob_0, prob_1
         for word in sent:
             if word in vocab_0:
-                prob_sum_0 *= word_prob_0[word]
+                prob_prod_0 *= word_prob_0[word]
             if word in vocab_1:
-                prob_sum_1 *= word_prob_1[word]
-        if prob_sum_0 > prob_sum_1:
+                prob_prod_1 *= word_prob_1[word]
+        if prob_prod_0 > prob_prod_1:
             y_pred.append(0)
         else:
             y_pred.append(1)
