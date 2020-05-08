@@ -40,14 +40,14 @@ class BinaryClassifier:
 				self.network.append(np.full((layers[l_no], layers[l_no+1]),1.0))
 
 	#Trains the network and returns a list of accuracies and loss over the training epochs
-	def train(self, X, Y, lr=0.5, epochs=10, batch_size = 100, dropout = False, use_bias = False):
+	def train(self, X, Y, lr=0.5, epochs=10, batch_size = 100, use_bias = False):
 		acc_list = []
 		loss_list = []
 		fscore_list = []
 		i = 0
 		for epoch in range(epochs):
 			while (i+1)*batch_size < X.shape[0]:
-				self.forward_pass(X[i*batch_size:(i+1)*batch_size], dropout)
+				self.forward_pass(X[i*batch_size:(i+1)*batch_size])
 				self.backward_pass(Y[i*batch_size:(i+1)*batch_size], use_bias)
 				self.update_weights(lr)
 				i += 1
@@ -63,7 +63,7 @@ class BinaryClassifier:
 		return [acc_list,loss_list,fscore_list]
 
 	#Does forward pass and stores the output for all of the training examples in outputs
-	def forward_pass(self, X, dropout = False, keep_prob = 0.5):
+	def forward_pass(self, X):
 		self.outputs = []
 		#First Layer outputs are the inputs itself
 		self.outputs.append(X)
@@ -75,13 +75,7 @@ class BinaryClassifier:
 				#ReLU is activation for hidden layers
 					self.outputs.append(self.relu(np.matmul(inputs,layer)))
 				elif self.activation == "tanh":
-					#ReLU is activation for hidden layers
 					self.outputs.append(self.tanh(np.matmul(inputs,layer)))
-
-				if(dropout):
-					binary_val = np.random.rand(self.outputs[-1].shape[0], self.outputs[-1].shape[1]) < keep_prob
-					self.outputs[-1] = np.multiply(self.outputs[-1], binary_val)
-					self.outputs[-1] /= keep_prob
 			else:
 				#Sigmoid is activation for last layer
 				self.outputs.append(self.sigmoid(np.matmul(inputs,layer)))
@@ -89,6 +83,7 @@ class BinaryClassifier:
 	#L2 loss is assumed
 	def backward_pass(self, Y, use_bias):
 		deltas = []
+		last = True
 		dels = []
 		#Last Layer, dZ/dx = out - y for each example
 		for i in range(Y.shape[0]):
@@ -168,7 +163,7 @@ print("Hidden Layers = ", hidden_layers)
 print("Weights Initialising = ", weights_initialization)
 print("Activation Function = ", activation)
 
-df = pd.read_csv('housepricedata_a2_2.csv')
+df = pd.read_csv('../housepricedata_a2_2.csv')
 label = 'AboveMedianPrice'
 X = df.drop(label, axis = 1).values
 
@@ -180,9 +175,8 @@ Y = df[label].values
 X_train, X_test, Y_train, Y_test = train_test_split(X,Y, test_size = 0.2)
 lr = 0.01
 epochs = 2000
-use_dropout = True
-print("Training: (lr = ",lr ," epochs = ", epochs, " Dropout = ", use_dropout, " )")
-metrics = nn.train(X_train, Y_train, lr, epochs, dropout = use_dropout)
+print("Training: (lr = ",lr ," epochs = ", epochs, ")")
+metrics = nn.train(X_train, Y_train, lr, epochs)
 #print(nn.bias)
 
 plt.plot(np.arange(len(metrics[0]))*10, metrics[0])

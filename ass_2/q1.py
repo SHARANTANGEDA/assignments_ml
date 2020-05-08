@@ -95,7 +95,7 @@ def scores(y, y_pred):
 
 df = pd.read_csv('data_banknote_authentication_a2_1.txt', sep=',', header=None)
 data = np.array(df)
-data = standard_scalar(data)  # Standardized Data with min=0, max=1, mean=0, var=1
+data = standard_scalar(data)  # Standardized Data with mean=0, var=1
 np.random.shuffle(data)
 d_train, d_val, d_test = np.split(data, [int(0.7 * len(data)), int(0.8 * len(data))])
 X_train, y_train = d_train[:, 0:4], d_train[:, 4]
@@ -104,11 +104,11 @@ X_train = np.hstack((X_train, const))
 lr, epochs = np.float_power(10, -4), 3000
 k = 0
 # Change for beta, normal etc..
-# w = np.random.uniform(-1/np.sqrt(X_train.shape[1]), 1/np.sqrt(X_train.shape[1]), (X_train.shape[1],))
-# w = np.random.uniform(-1/X_train.shape[1], 1/X_train.shape[1], (X_train.shape[1],))
-# w = np.zeros(X_train.shape[1])
+# w_init = np.random.uniform(-1/np.sqrt(X_train.shape[1]), 1/np.sqrt(X_train.shape[1]), (X_train.shape[1],))
+# w_init = np.random.uniform(-1/X_train.shape[1], 1/X_train.shape[1], (X_train.shape[1],))
+# w_init = np.zeros(X_train.shape[1])
 w_init = np.random.normal(0, 1, X_train.shape[1])
-# w = np.random.random(X_train.shape[1])
+# w_init = np.random.random(X_train.shape[1])
 
 # WITHOUT REGULARIZATION
 w = train_and_validate(X_train, w_init, epochs, d_val)
