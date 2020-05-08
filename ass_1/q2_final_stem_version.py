@@ -54,7 +54,8 @@ def fill_vocab(sentence, vocab, pos_vocab, vocab_0, y, wc_total, wc_pos, laplace
 
 
 def calc_prob(X, y, laplace_constant=1):
-    prob_0, prob_1 = y[y == 0].shape[0] / y.shape[0], y[y == 1].shape[0] / y.shape[0]
+    prob_0 = (y[y == 0].shape[0]+laplace_constant)/ (y.shape[0] + 2*laplace_constant)
+    prob_1 = (y[y == 1].shape[0]+laplace_constant)/ (y.shape[0] + 2*laplace_constant)
     vocab, vocab_1, vocab_0, word_cnt_total, word_cnt_1 = {}, {}, {}, 0, 0
     for ind, sentence in enumerate(X):
         word_cnt_total, word_cnt_1 = fill_vocab(sentence[0], vocab, vocab_1, vocab_0, y[ind], word_cnt_total,
